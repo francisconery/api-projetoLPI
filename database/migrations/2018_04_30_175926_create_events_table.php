@@ -18,14 +18,14 @@ class CreateEventsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->string('name');
             $table->string('about');
-            $table->binary('image');
+            $table->binary('profilePic');
             $table->string('latitude');
             $table->string('longitude');
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
 
-        DB::statement("ALTER TABLE events MODIFY COLUMN image MEDIUMBLOB");
+        DB::statement("ALTER TABLE events MODIFY COLUMN profilePic MEDIUMBLOB");
     }
 
     /**
