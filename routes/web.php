@@ -18,7 +18,7 @@ $router->get('/', function () use ($router) {
 $router->post("/login", "AuthController@login");
 $router->post("/register", "AuthController@register");
 
-$router->group(['prefix' => 'events'], function () use ($router) {
+$router->group(['prefix' => 'events', 'middleware' => 'auth'], function () use ($router) {
     $router->get('/', "EventsController@getEvents");
     $router->post("create", "EventsController@createEvent");
 });
