@@ -30,6 +30,7 @@ class EventsController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'api_token' => 'required',
+            'type'=> 'required',
         ]);
         
         if ($result->fails()) {
@@ -47,6 +48,7 @@ class EventsController extends Controller
         $event->profilePic = $request->input('image');
         $event->latitude = $request->input('latitude');
         $event->longitude = $request->input('longitude');
+        $event->type = intval($request->input('type'));
         $event->save();
 
         return response(json_encode(["status" => "Ok" , "message" => "Created"]), 201)->header('Content-Type', 'application/json');
@@ -61,6 +63,7 @@ class EventsController extends Controller
             events.latitude as latitude,
             events.longitude as longitude,
             events.updated_at as updated_at,
+            events.type as type,
             users.name as username'))
             ->join('users', function($join) {
                 $join->on('events.user_id',  '=' , 'users.id');
