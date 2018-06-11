@@ -7,6 +7,7 @@ use Validator;
 use App\Event;
 use AuthController;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class EventsController extends Controller
 {
@@ -53,7 +54,22 @@ class EventsController extends Controller
 
     public function getEvents()
     {
-        $events = Event::all(['name', 'name', 'about', 'profilePic' ,'latitude', 'longitude', 'updated_at'])->toArray();
+        $events = DB::table('events')
+        ->select(DB::raw('events.name as name,
+            events.about as about,
+            events.profilePic as profilePic,
+            events.latitude as latitude,
+            events.longitude as longitude,
+            events.updated_at as updated_at,
+            users.name as username'))
+            ->join('users', function($join) {
+                $join->on('events.user_id',  '=' , 'users.id');
+            })
+            ->get()
+            ->toArray();
+
+
+        //$events = Event::all(['name', 'name', 'about', 'profilePic' ,'latitude', 'longitude', 'updated_at'])->toArray();
         return response(json_encode(["status" => "Ok" , "message" => $events]), 200)->header('Content-Type', 'application/json');
     }
 
