@@ -22,4 +22,9 @@ $router->group(['prefix' => 'events', 'middleware' => 'auth'], function () use (
     $router->get('/', "EventsController@getEvents");
     $router->post("create", "EventsController@createEvent");
     $router->post("remove", "EventsController@removeEvent");
+    $router->post("update", "EventsController@updateEvent");
+    
 });
+
+$router->post("/level", "AuthController@level");
+

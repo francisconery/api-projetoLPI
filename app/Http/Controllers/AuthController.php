@@ -31,7 +31,7 @@ class AuthController extends Controller
         $user->level = 2;
 
         $user->save();
-        return response(json_encode(["status" => "Ok" , "message" => $user->api_token]), 201)->header('Content-Type', 'application/json');
+        return response(json_encode(["status" => "Ok" , "message" => ["token" => $user->api_token , "level" => $user->level]]), 201)->header('Content-Type', 'application/json');
     }
 
     public function login(Request $request)
@@ -48,6 +48,13 @@ class AuthController extends Controller
             $user->save();
         }
 
-        return response(json_encode(["status" => $user ? "Ok" : "Error" , "message" => $user ? $user->api_token : "Invalid credentials"]), $user ? 200 : 401)->header('Content-Type', 'application/json');
+        return response(json_encode(["status" => $user ? "Ok" : "Error" , "message" => $user ? ["token" => $user->api_token , "level" => $user->level] : "Invalid credentials"]), $user ? 200 : 401)->header('Content-Type', 'application/json');
+    }
+
+    public function level(Request $request)
+    {
+        return dd(User::where('name', '=', $request->input('name'))->first());
+    
+        
     }
 }

@@ -65,6 +65,7 @@ class EventsController extends Controller
             events.longitude as longitude,
             events.updated_at as updated_at,
             events.type as type,
+            events.feedback as feedback,
             users.name as username'))
             ->join('users', function($join) {
                 $join->on('events.user_id',  '=' , 'users.id');
@@ -114,5 +115,30 @@ class EventsController extends Controller
         $event->delete();
 
         return response(json_encode(["status" => "Ok" , "message" => "Removed"]), 200)->header('Content-Type', 'application/json');
+    }
+
+    public function updateEvent (Request $request)
+    {
+        $result = Validator::make($request->all(), [
+            'feedback' => 'required',
+            'event_id' => 'required',
+            'api_token' => 'required',
+        ]);
+
+        if ($result->fails()) {
+            return response(json_encode(["status" => "Error" , "message" => $result->messages()]), 400)->header('Content-Type', 'application/json');
+        }
+
+        $user = $this->getUserFromToken($request->input('api_token'));
+
+        if ($user === null || $user->level !== 1) {
+            return response(json_encode(["status" => "Error" , "message" => "Unauthorized"]), 401)->header('Content-Type', 'application/json');
+        }
+
+        $event = Event::find($request->input('event_id'));
+        $event->feedback = $request->input('feedback');
+        $event->save();
+
+        return response(json_encode(["status" => "Ok" , "message" => "Updated"]), 200)->header('Content-Type', 'application/json');
     }
 }
