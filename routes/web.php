@@ -21,4 +21,5 @@ $router->post("/register", "AuthController@register");
 $router->group(['prefix' => 'events', 'middleware' => 'auth'], function () use ($router) {
     $router->get('/', "EventsController@getEvents");
     $router->post("create", "EventsController@createEvent");
+    $router->post("remove", "EventsController@removeEvent");
 });

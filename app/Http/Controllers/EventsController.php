@@ -37,7 +37,7 @@ class EventsController extends Controller
             return response(json_encode(["status" => "Error" , "message" => $result->messages()]), 400)->header('Content-Type', 'application/json');
         }
         
-        if (($user_id = $this->getUserFromToken($request->input('api_token'))) === null) {
+        if (($user_id = $this->getUserFromToken($request->input('api_token'))->id) === null) {
             return response(json_encode(["status" => "Error" , "message" => "Unauthorized"]), 401)->header('Content-Type', 'application/json');
         }
 
@@ -57,7 +57,8 @@ class EventsController extends Controller
     public function getEvents()
     {
         $events = DB::table('events')
-        ->select(DB::raw('events.name as name,
+        ->select(DB::raw('events.id as id,
+            events.name as name,
             events.about as about,
             events.profilePic as profilePic,
             events.latitude as latitude,
@@ -84,6 +85,34 @@ class EventsController extends Controller
             ]
         )->first();
 
-        return $result ? $result->id : null;
+        return $result ? $result : null;
+    }
+
+    public function removeEvent(Request $request)
+    {
+        $result = Validator::make($request->all(), [
+            'id' => 'required',
+            'api_token' => 'required',
+        ]);
+
+        if ($result->fails()) {
+            return response(json_encode(["status" => "Error" , "message" => $result->messages()]), 400)->header('Content-Type', 'application/json');
+        }
+
+        $user = $this->getUserFromToken($request->input('api_token'));
+
+        if ($user === null) {
+            return response(json_encode(["status" => "Error" , "message" => "Unauthorized"]), 401)->header('Content-Type', 'application/json');
+        }
+
+        $event = Event::find($request->input('id'));
+
+        if ($user->id !== $event->user_id && $user->level !== 1) {
+            return response(json_encode(["status" => "Error" , "message" => "Unauthorized"]), 401)->header('Content-Type', 'application/json');
+        }
+
+        $event->delete();
+
+        return response(json_encode(["status" => "Ok" , "message" => "Removed"]), 200)->header('Content-Type', 'application/json');
     }
 }

@@ -28,6 +28,7 @@ class AuthController extends Controller
         $user->email = $request->input('email');
         $user->api_token = str_random(60);
         $user->password = hash('sha256', $request->input('password'));
+        $user->level = 2;
 
         $user->save();
         return response(json_encode(["status" => "Ok" , "message" => $user->api_token]), 201)->header('Content-Type', 'application/json');
